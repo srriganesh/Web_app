@@ -1,50 +1,61 @@
-import React, { useState } from "react";
-import axios from "axios";
-import "./App.css";
+import React from 'react';
+import Particles from 'react-tsparticles';
+import { loadFull } from 'tsparticles';
+import { motion } from 'framer-motion';
+import './App.css';
 
 function App() {
-  const [city, setCity] = useState("");
-  const [weather, setWeather] = useState(null);
-  const [error, setError] = useState("");
-
-  const getWeather = async () => {
-    if (!city) return;
-    try {
-      const res = await axios.get(`http://localhost:5000/api/weather?city=${city}`);
-      setWeather(res.data);
-      setError("");
-    } catch (err) {
-      setError("❌ City not found or error fetching weather.");
-      setWeather(null);
-    }
+  const particlesInit = async (main) => {
+    await loadFull(main);
   };
 
   return (
     <div className="App">
-      <h1>🌤️ Weather App</h1>
+      {/* Background Particles Animation */}
+      <Particles
+        id="tsparticles"
+        init={particlesInit}
+        options={{
+          fullScreen: { enable: true },
+          particles: {
+            number: { value: 60 },
+            color: { value: '#ffffff' },
+            shape: { type: 'circle' },
+            opacity: {
+              value: 0.5,
+              random: true,
+              anim: { enable: true, speed: 1, opacity_min: 0.1 }
+            },
+            size: {
+              value: 3,
+              random: true
+            },
+            move: {
+              enable: true,
+              speed: 1,
+              direction: 'none',
+              random: false,
+              outMode: 'bounce'
+            }
+          },
+          background: {
+            color: '#0f2027'
+          }
+        }}
+      />
 
-      <div className="search-container">
-        <input
-          type="text"
-          placeholder="Enter city name..."
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && getWeather()}
-        />
-        <button onClick={getWeather}>Get Weather</button>
-      </div>
+      {/* Main App Content with animation */}
+      <motion.div
+        className="content"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+      >
+        <h1>🌤️ Weather Forecast</h1>
+        <p>Check real-time weather in your city!</p>
 
-      {error && <p className="error">{error}</p>}
-
-      {weather && (
-        <div className="weather">
-          <h2>📍 {weather.name}, {weather.sys.country}</h2>
-          <p>🌡️ {weather.main.temp}°C</p>
-          <p>💧 Humidity: {weather.main.humidity}%</p>
-          <p>🌬️ Wind: {weather.wind.speed} m/s</p>
-          <p>🌈 {weather.weather[0].description}</p>
-        </div>
-      )}
+        {/* Add your actual content (weather form, results, etc.) here */}
+      </motion.div>
     </div>
   );
 }
